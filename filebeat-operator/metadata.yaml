@@ -1,0 +1,17 @@
+# Copyright 2021 David Garcia
+# See LICENSE file for licensing details.
+name: filebeat
+description: |
+  TODO: fill out the charm's description
+summary: |
+  TODO: fill out the charm's summary
+series: [kubernetes]
+
+deployment:
+  type: daemon
+resources:
+  filebeat-image:
+    type: oci-image
+    description: upstream docker image for Graylog
+    auto-fetch: true
+    upstream-source: 'elastic/filebeat:7.11.1'
