@@ -1,5 +1,6 @@
 # Monitoring
 
+```bash
 juju bootstrap microk8s
 juju add-model ecosystem microk8s
 
@@ -22,12 +23,14 @@ juju deploy ./node-exporter.charm
 juju relate prometheus node-exporter
 
 juju scale-application node-exporter 3
+```
 
-<!-- In grafana, do: -->
-<!-- rate(node_cpu_seconds_total{instance="node-exporter-0.node-exporter-endpoints:9100"}[5m]) -->
-<!-- rate(node_cpu_seconds_total{instance="node-exporter-1.node-exporter-endpoints:9100"}[5m]) -->
-<!-- rate(node_cpu_seconds_total{instance="node-exporter-1.node-exporter-endpoints:9100"}[5m]) -->
-
+In grafana, do:
+```
+rate(node_cpu_seconds_total{instance="node-exporter-0.node-exporter-endpoints:9100"}[5m])
+rate(node_cpu_seconds_total{instance="node-exporter-1.node-exporter-endpoints:9100"}[5m])
+rate(node_cpu_seconds_total{instance="node-exporter-1.node-exporter-endpoints:9100"}[5m])
+```
 # Logging
 
 cd ../mongodb-operator/
