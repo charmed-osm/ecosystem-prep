@@ -1,0 +1,16 @@
+# Copyright 2020 Balbir Thomas
+# See LICENSE file for licensing details.
+
+options:
+  elasticsearch-image-path:
+    default: docbthomas/elasticsearch
+    description: Elasticsearch container image.
+    type: string
+  cluster-name:
+    default: "elasticsearch"
+    description: Name of Elasticsearch cluster.
+    type: string
+  port:
+    default: 9200
+    description: Port on which Elasticsearch HTTP API is exposed.
+    type: int

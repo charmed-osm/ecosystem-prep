@@ -1,0 +1,6 @@
+options:
+  replica_set_name:
+    type: string
+    description: Name of the replica set
+    default: rs0
+
