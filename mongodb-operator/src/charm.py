@@ -12,7 +12,6 @@ from ops.model import (
     WaitingStatus,
     MaintenanceStatus
 )
-from oci_image import OCIImageResource, OCIImageResourceError
 
 from pod_spec import PodSpecBuilder
 from mongo import Mongo
@@ -45,7 +44,6 @@ class MongoDBCharm(CharmBase):
         self.state.set_default(replica_set_hosts=None)
 
         self.port = MONGODB_PORT
-        self.image = OCIImageResource(self, "mongodb-image")
 
         # Register all of the events we want to observe
         self.framework.observe(self.on.config_changed, self.configure_pod)
@@ -81,22 +79,12 @@ class MongoDBCharm(CharmBase):
 
         logger.debug("Running configuring_pod")
 
-        # Fetch image information
-        try:
-            self.unit.status = WaitingStatus("Fetching image information")
-            image_info = self.image.fetch()
-        except OCIImageResourceError:
-            self.unit.status = BlockedStatus(
-                "Error fetching image information")
-            return
-
         # Build Pod spec
         self.unit.status = WaitingStatus("Assembling pod spec")
         builder = PodSpecBuilder(
             name=self.model.app.name,
             replica_set_name=self.replica_set_name,
             port=self.port,
-            image_info=image_info,
         )
         pod_spec = builder.make_pod_spec()
 

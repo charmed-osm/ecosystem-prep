@@ -9,9 +9,3 @@ series: [kubernetes]
 
 deployment:
   type: daemon
-resources:
-  filebeat-image:
-    type: oci-image
-    description: upstream docker image for Graylog
-    auto-fetch: true
-    upstream-source: 'elastic/filebeat:7.11.1'

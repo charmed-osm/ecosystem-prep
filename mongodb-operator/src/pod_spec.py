@@ -6,12 +6,11 @@ logger = logging.getLogger(__name__)
 
 class PodSpecBuilder:
     def __init__(
-        self, name: str, replica_set_name: str = None, port: int = 27017, image_info={}
+        self, name: str, replica_set_name: str = None, port: int = 27017
     ):
         self.name = name
         self.replica_set_name = replica_set_name
         self.port = port
-        self.image_info = image_info
 
     def _make_pod_command(self):
         command = ["mongod"]
@@ -74,7 +73,7 @@ class PodSpecBuilder:
             "containers": [
                 {
                     "name": self.name,
-                    "imageDetails": self.image_info,
+                    "image": "mongo:latest",
                     "imagePullPolicy": "Always",
                     "command": command,
                     "ports": ports,

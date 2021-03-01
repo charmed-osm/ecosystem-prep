@@ -41,21 +41,12 @@ class FilebeatCharm(CharmBase):
     def _build_pod_spec(self):
         config = self.model.config
 
-        # fetch OCI image resource
-        try:
-            image_info = self.image.fetch()
-        except OCIImageResourceError:
-            logging.exception("An error occurred while fetching the image info")
-            self.unit.status = BlockedStatus("Error fetching image information")
-            return {}
-
-        # baseline pod spec
         spec = {
             "version": 3,
             "containers": [
                 {
                     "name": self.app.name,
-                    "imageDetails": image_info,
+                    "image": "elastic/filebeat:7.11.1",
                     "ports": [{"containerPort": config["port"], "protocol": "TCP"}],
                     "envConfig": {},
                     "args": ["-c", "/etc/filebeat/filebeat.yml", "-e"],

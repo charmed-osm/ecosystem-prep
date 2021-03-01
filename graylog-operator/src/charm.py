@@ -180,21 +180,13 @@ class GraylogCharm(CharmBase):
     def _build_pod_spec(self):
         config = self.model.config
 
-        # fetch OCI image resource
-        try:
-            image_info = self.image.fetch()
-        except OCIImageResourceError:
-            logging.exception("An error occurred while fetching the image info")
-            self.unit.status = BlockedStatus("Error fetching image information")
-            return {}
-
         # baseline pod spec
         spec = {
             "version": 3,
             "containers": [
                 {
                     "name": self.app.name,  # self.app.name is defined in metadata.yaml
-                    "imageDetails": image_info,
+                    "image": "graylog/graylog:3.3.8-1",
                     "ports": [
                         {
                             "name": "web",

@@ -24,8 +24,3 @@ peers:
 provides:
   database:
     interface: mongodb
-resources:
-  mongodb-image:
-    type: oci-image
-    description: upstream docker image for mongodb
-    upstream-source: 'mongo:4.4.1'
