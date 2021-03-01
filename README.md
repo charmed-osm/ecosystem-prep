@@ -5,6 +5,9 @@ Microk8s:
 ```bash
 sudo snap install microk8s --classic --channel 1.19/stable
 
+sudo usermod -a -G microk8s ubuntu
+sudo chown -f -R ubuntu ~/.kube
+
 newgrp microk8s
 microk8s.status --wait-ready
 microk8s.enable storage dns
