@@ -114,7 +114,7 @@ Deploy Filebeat and relate to graylog:
 
 ```bash
 juju deploy ./filebeat
-# juju relate graylog filebeat
+juju relate graylog filebeat
 ```
 
 TODO: Create a bundle with all charms
