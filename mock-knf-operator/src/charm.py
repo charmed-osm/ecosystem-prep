@@ -37,20 +37,14 @@ class PrometheusNodeExporterCharm(CharmBase):
         """Construct a Juju pod specification for Prometheus"""
         logger.debug("Building Pod Spec")
         config = self.model.config
+        with open("files/mock.log", "r") as f:
+            mock_log_content = f.read()
         spec = {
             "version": 3,
             "containers": [
                 {
                     "name": self.app.name,
-                    "imageDetails": {
-                        "imagePath": config["prometheus-node-exporter-image-path"],
-                        "username": config.get(
-                            "prometheus-node-exporter-image-username", ""
-                        ),
-                        "password": config.get(
-                            "prometheus-node-exporter-image-password", ""
-                        ),
-                    },
+                    "image": "prom/node-exporter",
                     "ports": [
                         {
                             "containerPort": config["port"],
@@ -58,44 +52,30 @@ class PrometheusNodeExporterCharm(CharmBase):
                             "protocol": "TCP",
                         }
                     ],
+                    "command": [
+                        "sh",
+                        "-c",
+                        "cat /var/log/mock.log && /bin/node_exporter",
+                    ],
+                    "volumeConfig": [{
+                        "name": "config",
+                        "mountPath": "/var/log",
+                        "files": [
+                            {
+                                "path": "mock.log",
+                                "content": mock_log_content,
+                            }
+                        ],
+                    }],
                 }
             ],
         }
 
         return spec
 
-    def _check_config(self):
-        """Identify missing but required items in configuation
-
-        :returns: list of missing configuration items (configuration keys)
-        """
-        logger.debug("Checking Config")
-        config = self.model.config
-        missing = []
-
-        if not config.get("prometheus-node-exporter-image-path"):
-            missing.append("prometheus-node-exporter-image-path")
-
-        if config.get("prometheus-node-exporter-image-username") and not config.get(
-            "prometheus-node-exporter-image-password"
-        ):
-            missing.append("prometheus-node-exporter-image-password")
-
-        return missing
-
     def _configure_pod(self):
         """Setup a new Prometheus pod specification"""
         logger.debug("Configuring Pod")
-        missing_config = self._check_config()
-        if missing_config:
-            logger.error(
-                "Incomplete Configuration : {}. "
-                "Application will be blocked.".format(missing_config)
-            )
-            self.unit.status = BlockedStatus(
-                "Missing configuration: {}".format(missing_config)
-            )
-            return
 
         if not self.unit.is_leader():
             self.unit.status = ActiveStatus()

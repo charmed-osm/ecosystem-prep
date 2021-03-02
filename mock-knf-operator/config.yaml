@@ -1,0 +1,5 @@
+options:
+  port:
+    description: The port prometheus will be listening on
+    type: int
+    default: 9100

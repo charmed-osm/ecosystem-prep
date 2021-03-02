@@ -9,3 +9,6 @@ series: [kubernetes]
 
 deployment:
   type: daemon
+requires:
+  logstash:
+    interface: elastic-beats

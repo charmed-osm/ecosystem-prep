@@ -49,7 +49,12 @@ class GraylogCharm(CharmBase):
         )  # connection str for elasticsearch
         self._stored.set_default(mongodb_uri=str())  # connection info for mongodb
         self._stored.set_default(password_secret=str())
+        self.framework.observe(self.on.logstash_relation_joined, self._provide_logstash_info)
 
+    def _provide_logstash_info(self, event):
+        if self.unit.is_leader():
+            event.relation.data[self.app]["host"] = self.app.name
+            event.relation.data[self.app]["port"] = str(5044)
     @property
     def bind_address(self):
         """Bind address used for http_bind_address config option"""

@@ -10,9 +10,9 @@ cd ../grafana-operator/
 charmcraft build
 mv ./grafana.charm ../grafana
 
-cd ../prometheus-node-exporter-operator/
+cd ../mock-knf-operator/
 charmcraft build
-mv ./node-exporter.charm ../node-exporter
+mv ./mock-knf.charm ../mock-knf
 
 cd ../mongodb-operator/
 charmcraft build

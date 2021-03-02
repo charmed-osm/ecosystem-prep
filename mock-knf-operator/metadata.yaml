@@ -1,4 +1,4 @@
-name: node-exporter
+name: mock-knf
 summary: Prometheus node exporter for Kubernetes clusters
 maintainers:
     - David García <david.garcia@canonical.com>

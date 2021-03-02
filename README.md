@@ -1,5 +1,7 @@
 # Pre-requisites
 
+sudo sysctl -w vm.max_map_count=262144
+
 Microk8s:
 
 ```bash
@@ -37,8 +39,6 @@ Build charms:
 
 # Monitoring
 
-TODO: Change name of `node-exporter` to something else.
-
 Prometheus:
 
 ```bash
@@ -60,19 +60,19 @@ juju relate grafana prometheus
 Deploy simulator:
 
 ```bash
-juju deploy ./node-exporter
+juju deploy ./mock-knf
 ```
 
 Relate simulator to prometheus:
 
 ```bash
-juju relate prometheus node-exporter
+juju relate prometheus mock-knf
 ```
 
 Scale simulator:
 
 ```bash
-juju scale-application node-exporter 3
+juju scale-application mock-knf 3
 ```
 
 ## Test
@@ -82,12 +82,10 @@ Go to Prometheus url and check under status/targets if all node exporters are li
 Login to grafana, create a dashboard and check the metrics for the following queries:
 
 ```
-rate(node_cpu_seconds_total{instance="node-exporter-0.node-exporter-endpoints:9100"}[5m])
-rate(node_cpu_seconds_total{instance="node-exporter-1.node-exporter-endpoints:9100"}[5m])
-rate(node_cpu_seconds_total{instance="node-exporter-1.node-exporter-endpoints:9100"}[5m])
+rate(node_cpu_seconds_total{instance="mock-knf-0.mock-knf-endpoints:9100"}[5m])
+rate(node_cpu_seconds_total{instance="mock-knf-1.mock-knf-endpoints:9100"}[5m])
+rate(node_cpu_seconds_total{instance="mock-knf-1.mock-knf-endpoints:9100"}[5m])
 ```
-
-TODO: Add an action to start a process of something, to see it in Grafana
 
 # Logging
 
@@ -119,7 +117,4 @@ juju deploy ./filebeat
 # juju relate graylog filebeat
 ```
 
-TODO: Add filebeat-graylog relation
 TODO: Create a bundle with all charms
-TODO: Create OSM packages and test it :)
-TODO: Try to add the beat input of graylog automatically

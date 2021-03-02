@@ -26,4 +26,6 @@ requires:
   mongodb:
     interface: mongodb
     limit: 1
-
+provides:
+  logstash:
+    interface: elastic-beats

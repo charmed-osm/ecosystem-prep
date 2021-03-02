@@ -26,8 +26,17 @@ class FilebeatCharm(CharmBase):
         # initialize image resource
         self.framework.observe(self.on.config_changed, self._on_config_changed)
         self.framework.observe(self.on.leader_elected, self._on_config_changed)
+        self.framework.observe(self.on.logstash_relation_changed, self._on_logstash_relation_changed)
+        self.framework.observe(self.on.logstash_relation_broken, self._on_logstash_relation_broken)
 
         self.image = OCIImageResource(self, "filebeat-image")
+
+    def _on_logstash_relation_changed(self, event):
+        self._configure_pod()
+        
+
+    def _on_logstash_relation_broken(self, event):
+        self._configure_pod()
 
     def _on_config_changed(self, _):
         self._configure_pod()
@@ -38,7 +47,17 @@ class FilebeatCharm(CharmBase):
     def _on_stop(self, _):
         self.unit.status = MaintenanceStatus("Pod is terminating.")
 
-    def _build_pod_spec(self):
+    def get_logstash_hosts(self):
+        hosts = []
+        for relation in self.model.relations["logstash"]:
+            if not relation.app or relation.app not in relation.data:
+                continue
+            relation_data = relation.data[relation.app]
+            if "host" in relation_data and "port" in relation_data:
+                hosts.append(f'{relation_data["host"]}:{relation_data["port"]}')
+        return hosts
+
+    def _build_pod_spec(self, logstash_hosts):
         config = self.model.config
 
         spec = {
@@ -48,7 +67,7 @@ class FilebeatCharm(CharmBase):
                     "name": self.app.name,
                     "image": "elastic/filebeat:7.11.1",
                     "ports": [{"containerPort": config["port"], "protocol": "TCP"}],
-                    "envConfig": {},
+                    "envConfig": {"hosts": str(logstash_hosts)},
                     "args": ["-c", "/etc/filebeat/filebeat.yml", "-e"],
                     "volumeConfig": [
                         {
@@ -79,7 +98,7 @@ class FilebeatCharm(CharmBase):
                                                 ],
                                             },
                                             "output": {
-                                                "logstash": {"hosts": ["graylog:5044"]}
+                                                "logstash": {"hosts": logstash_hosts}
                                             },
                                         }
                                     ),
@@ -98,8 +117,11 @@ class FilebeatCharm(CharmBase):
         if not self.unit.is_leader():
             self.unit.status = ActiveStatus()
             return
-
-        spec = self._build_pod_spec()
+        logstash_hosts = self.get_logstash_hosts()
+        if not logstash_hosts:
+            self.unit.status = BlockedStatus("Need logstash relation.")
+            return
+        spec = self._build_pod_spec(logstash_hosts)
         if not spec:
             return
         self.model.pod.set_spec(spec)
