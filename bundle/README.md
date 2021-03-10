@@ -34,12 +34,6 @@ Juju model:
 juju add-model ecosystem microk8s
 ```
 
-Build charms:
-
-```bash
-./build_charms.sh
-```
-
 Requirement for elasticsearch:
 
 ```bash
@@ -48,92 +42,8 @@ sudo sysctl -w vm.max_map_count=262144
 
 # Deployment
 
-To deploy the whole environment at the same time, execute the following command:
-
 ```bash
 juju deploy cs:knf-lma-stack
-```
-
-The following sections show the steps to deploy the charms manually, one by one.
-
-## Monitoring
-
-Prometheus:
-
-```bash
-juju deploy ./prometheus
-```
-
-Grafana:
-
-```bash
-juju deploy ./grafana
-```
-
-Relate prometheus and grafana:
-
-```bash
-juju relate grafana prometheus
-```
-
-Deploy simulator:
-
-```bash
-juju deploy ./mock-knf
-```
-
-Relate simulator to prometheus:
-
-```bash
-juju relate prometheus mock-knf
-```
-
-Scale simulator:
-
-```bash
-juju scale-application mock-knf 3
-```
-
-### Test
-
-Go to Prometheus url and check under status/targets if all node exporters are listed there.
-
-Login to grafana, create a dashboard and check the metrics for the following queries:
-
-```
-rate(node_cpu_seconds_total{instance="mock-knf-0.mock-knf-endpoints:9100"}[5m])
-rate(node_cpu_seconds_total{instance="mock-knf-1.mock-knf-endpoints:9100"}[5m])
-rate(node_cpu_seconds_total{instance="mock-knf-1.mock-knf-endpoints:9100"}[5m])
-```
-
-## Logging
-
-Deploy Graylog:
-
-```bash
-juju deploy ./graylog
-juju config graylog admin-password=admin
-```
-
-Deploy Mongo and elasticsearch:
-
-```bash
-juju deploy ./mongodb
-juju deploy ./elasticsearch
-```
-
-Graylog relations:
-
-```bash
-juju relate graylog mongodb
-juju relate graylog elasticsearch
-```
-
-Deploy Filebeat and relate to graylog:
-
-```bash
-juju deploy ./filebeat
-juju relate graylog filebeat
 ```
 
 # Scaling

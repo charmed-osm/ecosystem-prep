@@ -1,0 +1,36 @@
+bundle: kubernetes
+applications:
+  elasticsearch:
+    charm: cs:~davigar15/elasticsearch
+    scale: 1
+  filebeat:
+    charm: cs:~davigar15/filebeat
+    scale: 1
+  grafana:
+    charm: cs:~davigar15/grafana
+    scale: 1
+  graylog:
+    charm: cs:~davigar15/graylog
+    scale: 1
+    options:
+      admin-password: admin
+  mock-knf:
+    charm: cs:~davigar15/mock-knf
+    scale: 1
+  mongodb:
+    charm: cs:~davigar15/mongodb
+    scale: 1
+  prometheus:
+    charm: cs:~davigar15/prometheus
+    scale: 1
+relations:
+- - grafana:grafana-source
+  - prometheus:grafana-source
+- - prometheus:target
+  - mock-knf:prometheus-target
+- - graylog:mongodb
+  - mongodb:database
+- - graylog:elasticsearch
+  - elasticsearch:datastore
+- - graylog:logstash
+  - filebeat:logstash
